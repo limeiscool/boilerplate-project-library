@@ -8,6 +8,7 @@
 
 "use strict";
 const Book = require("../models/schema.js");
+const mongoose = require("mongoose");
 
 module.exports = function (app) {
   app
@@ -47,13 +48,16 @@ module.exports = function (app) {
 
     .delete(function (req, res) {
       let bookid = req.params.id;
-      Book.findByIdAndDelete(bookid, (err, docs) => {
-        if (err) {
-          return res.status(500).json("no book exists");
-        } else {
-          return res.status(200).json({ success: "delete successful" });
-        }
-      });
+      if (!bookid || bookid.length === 0) {
+        return res.status(400).json({ error: "missing required field id" });
+      }
+      Book.deleteOne({ _id: bookid })
+        .then(() => {
+          res.json({ success: "delete successful" });
+        })
+        .catch((e) => {
+          res.status(404).json({ error: "no book exists" });
+        });
       //if successful response will be 'delete successful'
     });
 };

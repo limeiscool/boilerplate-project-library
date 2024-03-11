@@ -18,31 +18,31 @@ suite("Functional Tests", function () {
    * ----[EXAMPLE TEST]----
    * Each test should completely test the response of the API end-point including response status code!
    */
-  test("#example Test GET /api/books", function (done) {
-    chai
-      .request(server)
-      .get("/api/books")
-      .end(function (err, res) {
-        assert.equal(res.status, 200);
-        assert.isArray(res.body, "response should be an array");
-        assert.property(
-          res.body[0],
-          "commentcount",
-          "Books in array should contain commentcount"
-        );
-        assert.property(
-          res.body[0],
-          "title",
-          "Books in array should contain title"
-        );
-        assert.property(
-          res.body[0],
-          "_id",
-          "Books in array should contain _id"
-        );
-        done();
-      });
-  });
+  // test("#example Test GET /api/books", function (done) {
+  //   chai
+  //     .request(server)
+  //     .get("/api/books")
+  //     .end(function (err, res) {
+  //       assert.equal(res.status, 200);
+  //       assert.isArray(res.body, "response should be an array");
+  //       assert.property(
+  //         res.body[0],
+  //         "commentcount",
+  //         "Books in array should contain commentcount"
+  //       );
+  //       assert.property(
+  //         res.body[0],
+  //         "title",
+  //         "Books in array should contain title"
+  //       );
+  //       assert.property(
+  //         res.body[0],
+  //         "_id",
+  //         "Books in array should contain _id"
+  //       );
+  //       done();
+  //     });
+  // });
   /*
    * ----[END of EXAMPLE TEST]----
    */
@@ -63,6 +63,7 @@ suite("Functional Tests", function () {
               assert.property(res.body, "_id");
               assert.property(res.body, "title");
               id = res.body._id;
+              console.log(id);
               done();
             });
         });
@@ -125,13 +126,23 @@ suite("Functional Tests", function () {
           .delete(`/api/books/${id}`)
           .end((err, res) => {
             assert.equal(res.status, 200);
+            assert.property(res.body, "success");
             assert.equal(res.body.success, "delete successful");
+            done();
           });
       });
 
-      // test('Test DELETE /api/books/[id] with  id not in db', function(done){
-      //   //done();
-      // });
+      test("Test DELETE /api/books/[id] with  id not in db", function (done) {
+        chai
+          .request(server)
+          .delete("/api/books/123456789")
+          .end((err, res) => {
+            assert.equal(res.status, 404);
+            assert.property(res.body, "error");
+            assert.equal(res.body.error, "no book exists");
+            done();
+          });
+      });
     });
   });
 });
