@@ -60,6 +60,24 @@ module.exports = function (app) {
     .route("/api/books/:id")
     .get(function (req, res) {
       let bookid = req.params.id;
+      Book.findById(bookid)
+        .then((doc) => {
+          if (!doc) {
+            console.log("no book exists");
+          } else {
+            console.log(doc);
+            res.json({
+              _id: doc._id.toString(),
+              title: doc.title,
+              comments: doc.comments.map((comment) => {
+                return comment;
+              }),
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
     })
 
