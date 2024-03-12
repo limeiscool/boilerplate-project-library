@@ -14,6 +14,21 @@ module.exports = function (app) {
   app
     .route("/api/books")
     .get(function (req, res) {
+      Book.find()
+        .then((doc) => {
+          let resArr = doc.map((book) => {
+            return {
+              _id: book._id.toString(),
+              title: book.title,
+              commentCount: book.comments.length,
+            };
+          });
+          res.json(resArr);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
       //response will be array of book objects
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
     })
@@ -30,6 +45,14 @@ module.exports = function (app) {
     })
 
     .delete(function (req, res) {
+      Book.deleteMany({})
+        .then(() => {
+          res.json({ success: "complete delete successful" });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(400).json({ error: "error removing all books" });
+        });
       //if successful response will be 'complete delete successful'
     });
 

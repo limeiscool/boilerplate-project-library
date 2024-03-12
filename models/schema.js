@@ -7,6 +7,7 @@ const commentsSchema = new mongoose.Schema({
 
 const BookSchema = new mongoose.Schema({
   title: { type: String, required: true },
+  commentCount: { type: Number, default: 0 },
   comments: [commentsSchema],
 });
 
