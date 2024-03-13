@@ -78,9 +78,8 @@ suite("Functional Tests", function () {
             .send({ title: "" })
             .end((err, res) => {
               assert.equal(res.status, 400);
-              assert.property(res.body, "error");
-              assert.isString(res.body.error, "error should be a string");
-              assert.equal(res.body.error, "missing required field title");
+              assert.isString(res.body, "res.body should be a string");
+              assert.equal(res.body, "missing required field title");
               done();
             });
         });
@@ -100,10 +99,10 @@ suite("Functional Tests", function () {
               assert.isString(book._id, "id should be a string");
               assert.property(book, "title");
               assert.isString(book.title, "title should be a string");
-              assert.property(book, "commentCount");
+              assert.property(book, "commentcount");
               assert.isNumber(
-                book.commentCount,
-                "commentCount should be a number"
+                book.commentcount,
+                "commentcount should be a number"
               );
             });
             done();
@@ -118,8 +117,8 @@ suite("Functional Tests", function () {
           .get("/api/books/123456789012345")
           .end((err, res) => {
             assert.equal(res.status, 404);
-            assert.property(res.body, "error");
-            assert.equal(res.body.error, "no book exists");
+            assert.isString(res.body, "res.body should be a string");
+            assert.equal(res.body, "no book exists");
             done();
           });
       });
@@ -159,29 +158,18 @@ suite("Functional Tests", function () {
               assert.equal(res.body._id, id);
               assert.property(res.body, "title");
               assert.isString(res.body.title, "title should be a string");
-              assert.property(res.body, "commentCount");
+              assert.property(res.body, "commentcount");
               assert.isNumber(
-                res.body.commentCount,
+                res.body.commentcount,
                 "commentCount should be a number"
               );
               assert.property(res.body, "comments");
               assert.isArray(res.body.comments, "comments should be an array");
-              // comment
-              assert.isObject(
-                res.body.comments[0],
-                "comment should be an object"
-              );
-              assert.property(res.body.comments[0], "_id");
               assert.isString(
-                res.body.comments[0]._id,
-                "comment id should be a string"
+                res.body.comments[0],
+                "each comment should be a string"
               );
-              assert.property(res.body.comments[0], "comment");
-              assert.equal(
-                res.body.comments[0].comment,
-                "functional testing comment"
-              );
-              assert.property(res.body.comments[0], "date");
+
               done();
             });
         });
@@ -193,8 +181,8 @@ suite("Functional Tests", function () {
             .send({ comment: "" })
             .end((err, res) => {
               assert.equal(res.status, 400);
-              assert.property(res.body, "error");
-              assert.equal(res.body.error, "missing required field comment");
+              assert.isString(res.body, "res.body should be a string");
+              assert.equal(res.body, "missing required field comment");
               done();
             });
         });
@@ -206,8 +194,8 @@ suite("Functional Tests", function () {
             .send({ comment: "functional testing with non-valid id" })
             .end((err, res) => {
               assert.equal(res.status, 404);
-              assert.property(res.body, "error");
-              assert.equal(res.body.error, "no book exists");
+              assert.isString(res.body, "res.body should be a string");
+              assert.equal(res.body, "no book exists");
               done();
             });
         });
@@ -221,8 +209,8 @@ suite("Functional Tests", function () {
           .delete(`/api/books/${id}`)
           .end((err, res) => {
             assert.equal(res.status, 200);
-            assert.property(res.body, "success");
-            assert.equal(res.body.success, "delete successful");
+            assert.isString(res.body, "res.body should be a string");
+            assert.equal(res.body, "delete successful");
             done();
           });
       });
@@ -233,8 +221,8 @@ suite("Functional Tests", function () {
           .delete("/api/books/123456789")
           .end((err, res) => {
             assert.equal(res.status, 404);
-            assert.property(res.body, "error");
-            assert.equal(res.body.error, "no book exists");
+            assert.isString(res.body, "res.body should be a string");
+            assert.equal(res.body, "no book exists");
             done();
           });
       });
