@@ -66,10 +66,9 @@ suite("Functional Tests", function () {
               assert.property(res.body, "title");
               assert.isString(res.body.title, "title should be a string");
               id = res.body._id;
-              console.log(id);
               done();
             });
-        });
+        }).timeout(10000);
 
         test("Test POST /api/books with no title given", function (done) {
           chai

@@ -21,6 +21,7 @@ module.exports = function (app) {
               _id: book._id.toString(),
               title: book.title,
               commentcount: book.comments.length,
+              comments: book.comments.map((comment) => comment?.comment),
             };
           });
           return res.json(remappedDoc);
@@ -35,15 +36,20 @@ module.exports = function (app) {
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
     })
 
-    .post(async (req, res) => {
+    .post((req, res) => {
       let title = req.body.title;
       if (!title || title.length === 0) {
         return res.status(400).json("missing required field title");
       }
 
       let newBook = new Book({ title: title });
-      await newBook.save();
-      return res.json({ _id: newBook._id.toString(), title: newBook.title });
+      newBook.save().then((savedBook) => {
+        return res.json({
+          _id: savedBook._id.toString(),
+          title: savedBook.title,
+        });
+      });
+
       //response will contain new book object including atleast _id and title
     })
 
@@ -80,23 +86,24 @@ module.exports = function (app) {
       let bookid = req.params.id;
       let comment = req.body.comment;
 
-      if (!bookid || bookid.length === 0) {
+      if (!bookid) {
         return res.status(400).json("missing required param id");
       }
-      if (!comment || comment.length === 0) {
+      if (!comment) {
         return res.status(400).json("missing required field comment");
       }
 
       await Book.findById(bookid)
-        .then(async (matchedBook) => {
+        .then((matchedBook) => {
           matchedBook.commentCount++;
           matchedBook.comments.push({ comment: comment });
-          await matchedBook.save();
-          return res.json({
-            _id: matchedBook._id.toString(),
-            title: matchedBook.title,
-            commentcount: matchedBook.commentCount,
-            comments: matchedBook.comments.map((comment) => comment?.comment),
+          matchedBook.save().then((savedBook) => {
+            return res.json({
+              _id: savedBook._id.toString(),
+              title: savedBook.title,
+              commentcount: savedBook.commentCount,
+              comments: savedBook.comments.map((comment) => comment?.comment),
+            });
           });
         })
         .catch((err) => {
@@ -110,9 +117,10 @@ module.exports = function (app) {
       let bookid = req.params.id;
 
       await Book.findById(bookid)
-        .then(async (matchedBook) => {
-          await matchedBook.deleteOne();
-          return res.json("delete successful");
+        .then((matchedBook) => {
+          matchedBook.deleteOne().then(() => {
+            return res.json("delete successful");
+          });
         })
         .catch((err) => {
           return res.status(404).json("no book exists");
