@@ -68,7 +68,7 @@ suite("Functional Tests", function () {
               id = res.body._id;
               done();
             });
-        }).timeout(10000);
+        });
 
         test("Test POST /api/books with no title given", function (done) {
           chai
