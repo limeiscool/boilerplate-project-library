@@ -27,23 +27,21 @@ module.exports = function (app) {
           return res.json(remappedDoc);
         })
         .catch((err) => {
-          return res
-            .status(503)
-            .json("error fetching from database, try again later");
+          return res.send("error fetching from database, try again later");
         });
 
       //response will be array of book objects
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
     })
 
-    .post((req, res) => {
+    .post(async (req, res) => {
       let title = req.body.title;
-      if (!title || title.length === 0) {
-        return res.status(400).json("missing required field title");
+      if (!title || title === undefined) {
+        return res.send("missing required field title");
       }
 
       let newBook = new Book({ title: title });
-      newBook.save().then((savedBook) => {
+      await newBook.save().then((savedBook) => {
         return res.json({
           _id: savedBook._id.toString(),
           title: savedBook.title,
@@ -56,10 +54,10 @@ module.exports = function (app) {
     .delete(async (req, res) => {
       await Book.deleteMany({})
         .then(() => {
-          return res.json("complete delete successful");
+          return res.send("complete delete successful");
         })
         .catch((err) => {
-          return res.status(400).json("error removing all books");
+          return res.send("error removing all books");
         });
       //if successful response will be 'complete delete successful'
     });
@@ -77,7 +75,7 @@ module.exports = function (app) {
           });
         })
         .catch((err) => {
-          return res.status(404).json("no book exists");
+          return res.send("no book exists");
         });
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
     })
@@ -87,10 +85,10 @@ module.exports = function (app) {
       let comment = req.body.comment;
 
       if (!bookid) {
-        return res.status(400).json("missing required param id");
+        return res.send("missing required param id");
       }
       if (!comment) {
-        return res.status(400).json("missing required field comment");
+        return res.send("missing required field comment");
       }
 
       await Book.findById(bookid)
@@ -107,7 +105,7 @@ module.exports = function (app) {
           });
         })
         .catch((err) => {
-          return res.status(404).json("no book exists");
+          return res.send("no book exists");
         });
 
       //json res format same as .get
@@ -119,11 +117,11 @@ module.exports = function (app) {
       await Book.findById(bookid)
         .then((matchedBook) => {
           matchedBook.deleteOne().then(() => {
-            return res.json("delete successful");
+            return res.send("delete successful");
           });
         })
         .catch((err) => {
-          return res.status(404).json("no book exists");
+          return res.send("no book exists");
         });
 
       //if successful response will be 'delete successful'
